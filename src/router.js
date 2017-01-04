@@ -5,7 +5,21 @@
 * @Project: projectName
 * @Filename: router.js
 * @Last modified by:   AuthorName
-* @Last modified time: 2016-12-31T20:51:18+08:00
+* @Last modified time: 2017-01-04T16:24:30+08:00
 * @License: tree
 */
 
+import vSidebar from './components/vSidebar.vue'
+const Foo = { template: '<div>foo</div>' }
+export default [
+  // {
+  //   path: '/',
+  //   component: (resolve) => {
+  //     require(['./App'],resolve)
+  //   },
+  // },
+  {
+    path:'/listsw',
+    component: Foo
+  }
+]

@@ -2,8 +2,7 @@
   <div class="ContnentList" @ready='doThis'>
     <ul class="content-list" v-for="vo in this.list" >
       <li class="share-box">
-        <span>{{tabToName(vo)}}</span>
-        <h3>{{vo.title}}</h3>
+        <h3><span>{{tabToName(vo)}}</span>{{vo.title}}</h3>
       </li>
       <li class="user-conent">
         <div>
@@ -30,7 +29,8 @@ export default {
     return {
       list: [],
       isLoading: false,
-      page: 1,
+      page: 3,
+      limit:30
     }
   },
    route:{
@@ -41,10 +41,11 @@ export default {
     },
   methods: {
     GetData () {
-      var params = ``;
-    this.$http.get('https://cnodejs.org/api/v1/topics',[]).then((res) => {
+      // var params = `?tab=${(type === 'all' ? 'good' : good)}&page=${page}&limit=${limit}`
+    this.$http.get('https://cnodejs.org/api/v1/topics/?tab=good&'+'page='+this.page+'&limit='+this.limit).then((res) => {
       console.log(res.data);
       this.list = res.data.data;
+      this.isLoading =  false;
     },(err) => {
       console.log(err)
     })
@@ -67,6 +68,8 @@ export default {
       return name;
     },
     GetListData() {
+      this.isLoading = true;
+      this.limit +=30;
       this.GetData();
     }
   }
@@ -77,28 +80,34 @@ export default {
 <style lang="sass" scoped>
 .ContnentList {
   color:#222;
-  margin: .7rem 0 0 0;
+  margin: 45px 0 0 0;
 }
 .content-list {
-  padding: .2rem .2rem;
+  padding: 10px;
   border-bottom: 1px solid #d5dbdb;
 }
 .share-box {
+  overflow: hidden;
 
  span {
+  // float: left;
   display: inline-block;
-  padding: .02rem .1rem;
+  padding: 2px 4px;
   background-color: #1abc9c;
-  border-radius: .1rem;
+  border-radius: 4px;
   color: #fff;
-  // margin: 0 .05rem 0 0;
-  font-size: .2rem;
+  margin: 0 10px 0 0;
+  font-size: 14px;
  }
 
  h3 {
-  display: inline-block;
-  font-size: .24rem;
+  // width: 351px;
+  // float: left;
+  font-size: 16px;
   font-weight: 400;
+  white-space: pre-line;
+  word-break:normal;
+  word-wrap: break-word;
  }
 }
 
@@ -115,13 +124,16 @@ export default {
 
 .user-img {
   float: left;
-  width: .65rem;
-  height: .65rem;
-  border-radius: .1rem;
-  margin: .1rem .1rem 0 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 5px;
+  margin: 5px 10px 0 0;
 }
 .name-box {
+  line-height: 20px;
   float: left;
+  font-size: 14px;
+  margin: 5px 0 0 0;
 
   span {
     display: block;
@@ -129,6 +141,9 @@ export default {
 }
 
 .number {
+  line-height: 20px;
+  font-size: 14px;
+  margin: 5px 0 0 0;
   span:first-child {
     color: #42b983;
   }
@@ -137,7 +152,7 @@ export default {
 // 加载按钮
 .loading-btn {
   display: block;
-  width: 5rem;
-  margin: .3rem auto;
+  width: 50%;
+  margin: 30px auto;
 }
 </style>

@@ -44,6 +44,7 @@ module.exports = {
           name: '[name].[ext]?[hash]'
         }
       },
+      { test: /\.(html|tpl)$/, loader: 'html-loader' },
       {
         test:/\.sass$/,
         loaders:["style","css","sass"]
@@ -70,8 +71,8 @@ module.exports = {
   // webpack静态服务器配置
   devServer: {
     contentBase: './',
-    host: '192.168.79.1',
-    port: '3334',
+    // host: ' 192.168.1.5',
+    // port: '3336',
     color: true
   },
   resolve: {

@@ -1,38 +1,42 @@
 <template>
-  <div>
-    <div id="app">
+  <div class="App">
       <header class="header">
-        <div class="menu-btn">
+        <router-link to='/foo' class="menu-btn">
           <i class="iconfont">&#xe67c;</i>
-        </div>
-        <div class="send-btn">
+        </router-link>
+        <router-link to='/foosw' class="send-btn">
           <i class="iconfont">&#xe674;</i>
-        </div>
+        </router-link>
         <h2>{{ title }}</h2>
       </header>
-      <Contnent-list></Contnent-list>
-    </div>
+      <div class="">
+      </div>
+      <router-view></router-view>
+      <!-- <transition> -->
+        <!-- <keep-alive> -->
+        <!-- </keep-alive> -->
+      <!-- </transition> -->
+      <!-- <Contnent-list></Contnent-list> -->
   </div>
 </template>
 
 <script>
-  import ContnentList from './components/ContnentList.vue'
+  // import ContnentList from './view/ContnentList.vue'
 
   export default {
-    name: 'app',
     data: function () {
       return {
         title: '首页'
       }
     },
-    components: {
-      ContnentList
-    }
+    // components: {
+    //   ContnentList
+    // }
   }
 </script>
 
 <style lang="sass">
-#app {
+.App {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -40,26 +44,25 @@
 };
 .header {
   display: block;
-  width: 7.5rem;
-  height: .8rem;
+  width: 100%;
+  height: 47px;
   position: fixed;
   left: 0;
   right: 0;
   top: 0;
   background-color: hsla(0,0%,100%,.95);
   box-shadow: 0 0 4px rgba(0,0,0,.25);
-  padding: .1rem 0 0 0;
 
   h2 {
-    font-size: .249rem;
+    font-size: 18px;
     text-align: center;
-    line-height: .55rem;
+    line-height: 45px;
     font-weight: 400;
   }
   i {
-    padding: 14px;
+    padding: 10px 10px 10px 10px;
     display: block;
-    font-size: .35rem;
+    font-size: 24px;
   }
   .menu-btn {
     cursor: pointer;
