@@ -41,7 +41,7 @@ export default {
     },
   methods: {
     GetData () {
-      // var params = `?tab=${(type === 'all' ? 'good' : good)}&page=${page}&limit=${limit}`
+
     this.$http.get('https://cnodejs.org/api/v1/topics/?tab=good&'+'page='+this.page+'&limit='+this.limit).then((res) => {
       console.log(res.data);
       this.list = res.data.data;

@@ -1,13 +1,14 @@
 <template lang="html">
-<div class="">
-  
-</div>
+  <router-link to="/admin">
+    登录
+  </router-link>
 </template>
 
 <script>
 export default {
+  
 }
 </script>
 
-<style lang="sass">
+<style lang="css">
 </style>
