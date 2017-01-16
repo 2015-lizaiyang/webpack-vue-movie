@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'iconfont';  /* project id 212344 */
-  src: url('//at.alicdn.com/t/font_ih92c89y2be53ik9.eot');
-  src: url('//at.alicdn.com/t/font_ih92c89y2be53ik9.eot?#iefix') format('embedded-opentype'),
-  url('//at.alicdn.com/t/font_ih92c89y2be53ik9.woff') format('woff'),
-  url('//at.alicdn.com/t/font_ih92c89y2be53ik9.ttf') format('truetype'),
-  url('//at.alicdn.com/t/font_ih92c89y2be53ik9.svg#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/font_r9a0q1yly0fkzkt9.eot');
+  src: url('//at.alicdn.com/t/font_r9a0q1yly0fkzkt9.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_r9a0q1yly0fkzkt9.woff') format('woff'),
+  url('//at.alicdn.com/t/font_r9a0q1yly0fkzkt9.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_r9a0q1yly0fkzkt9.svg#iconfont') format('svg');
 }
 .iconfont{
   font-family:"iconfont" !important;
@@ -33,8 +33,8 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pr
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: .289rem;
-  font-family:'微软雅黑';
+  font-size: 14px;
+  font-family: "Proxima Nova", "Helvetica Neue", Helvetica,"PingFang SC","Microsoft YaHei","微软雅黑", Arial, sans-serif;
   vertical-align: baseline;
   background: transparent;
 }

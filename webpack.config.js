@@ -41,7 +41,7 @@ module.exports = {
         loader: 'url',
         query: {
           limit: 10000,
-          name: '[name].[ext]?[hash]'
+          name: '/img/[name]-[hash:8].[ext]'
         }
       },
       { test: /\.(html|tpl)$/, loader: 'html-loader' },
@@ -79,7 +79,7 @@ module.exports = {
     extensions: ['', '.js', '.vue', '.json'],
     // extensions: [' ','.js','.vue','.css','.json','.scss'],
     alias: {
-      'vue$': 'vue/dist/vue.js',
+      'vue$': 'vue/dist/vue.common.js',
     }
   },
   devtool: '#eval-source-map',

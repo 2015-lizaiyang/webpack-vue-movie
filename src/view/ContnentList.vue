@@ -1,21 +1,16 @@
 <template>
   <div class="ContnentList" @ready='doThis'>
-    <ul class="content-list" v-for="vo in this.list" >
+    <ul class="content-list" v-for="(vo,index) in this.list" @click='LinkContent(vo.id)'>
       <li class="share-box">
         <h3><span>{{tabToName(vo)}}</span>{{vo.title}}</h3>
       </li>
-      <li class="user-conent">
-        <div>
-          <img class="user-img" :src="vo.author.avatar_url" alt="">
-          <div class="name-box">
-            <span>{{vo.author.loginname}}</span>
-            <span>{{vo.create_at | getLastTimeStr(true)}}</span>
+      <li>
+        <v-user-header :userImg="vo.author.avatar_url" :userName="vo.author.loginname" :userTime="vo.create_at | getLastTimeStr(true)">
+          <div slot='two'>
+            <p class="number"><span title="回复数">{{vo.reply_count}}</span>/<span title="阅读数">{{vo.visit_count}}</span></p>
+            <p>{{vo.last_reply_at | getLastTimeStr(true)}}</p>
           </div>
-        </div>
-        <div>
-          <p class="number"><span title="回复数">{{vo.reply_count}}</span>/<span title="阅读数">{{vo.visit_count}}</span></p>
-          <p>{{vo.last_reply_at | getLastTimeStr(true)}}</p>
-        </div>
+        </v-user-header>
       </li>
     </ul>
     <button class="loading-btn button button-glow button-rounded button-caution" @click='GetListData'>{{ isLoading ? "正在加载..." : "加载更多" }}</button>
@@ -24,31 +19,43 @@
 
 <script>
 // import serverData from '../server-address.js'
+import vUserHeader from '../components/vUserHeader'
 export default {
   data () {
     return {
       list: [],
-      isLoading: false,
+      isLoading: true,
       page: 3,
-      limit:30
+      limit:30,
+      tab:'all',
+      titles: null
     }
   },
-   route:{
-
-   },
-    mounted () {
-      this.GetData();
-    },
+  components: {
+    vUserHeader
+  },
+  watch: {
+    '$route' (to, from) {
+      var query = to.query;
+      if(to.name === "list"){
+        this.limit = 30
+        this.tab = query.tab || 'all'
+        this.GetData();
+      }
+    }
+  },
+  created() {
+    this.GetData();
+  },
   methods: {
     GetData () {
-
-    this.$http.get('https://cnodejs.org/api/v1/topics/?tab=good&'+'page='+this.page+'&limit='+this.limit).then((res) => {
-      console.log(res.data);
-      this.list = res.data.data;
-      this.isLoading =  false;
-    },(err) => {
-      console.log(err)
-    })
+      var url = 'https://cnodejs.org/api/v1/topics/?tab='+this.tab+'&page='+this.page+'&limit='+this.limit;
+      this.$http.get(url).then((res) => {
+        this.list = res.data.data;
+        this.isLoading =  false;
+      },(err) => {
+        console.log(err)
+      })
     },
     doThis () {
       this.GetData();
@@ -71,6 +78,9 @@ export default {
       this.isLoading = true;
       this.limit +=30;
       this.GetData();
+    },
+    LinkContent(ids) {
+      this.$router.push({path:'/topic/'+ids});
     }
   }
 }

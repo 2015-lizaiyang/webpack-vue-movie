@@ -10,6 +10,7 @@
 */
 
 import Vue from 'vue'
+import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
 import filters from './assets/js/filters'
@@ -27,6 +28,7 @@ var router =  new VueRouter({
   base: __dirname,
   routes: RouterMap
 });
+window.Bus = new Vue();
 new Vue({
   el: '#app',
 	router,
