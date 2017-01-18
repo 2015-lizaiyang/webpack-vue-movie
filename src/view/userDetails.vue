@@ -51,7 +51,6 @@ import vUserHeader from '../components/vUserHeader.vue';
     },
     watch: {
     '$route' (to, from) {
-      console.log(to);
       this.userName = to.params.username;
       this.getUserDetails();
       }

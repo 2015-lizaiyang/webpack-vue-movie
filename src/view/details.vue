@@ -19,11 +19,19 @@
         <button class="button button-glow button-rounded button-highlight" type="submit">确定</button>
       </form>
     </div>
+    <v-confirm :count="count">
+      <h3 slot="one">{{ contents }}</h3>
+      <div class="confirm-button" slot="footer">
+        <button @click.stop.prevent="confirmHandler">确认</button>
+      </div>
+    </v-confirm>
   </div>
 </template>
 <script type="text/javascript">
 import VComment from '../components/vComment';
-import vUserHeader from '../components/vUserHeader'
+import vUserHeader from '../components/vUserHeader';
+import vConfirm from '../components/vConfirm.vue';
+import api from '../api.js';
 export default {
   data() {
     return {
@@ -33,12 +41,15 @@ export default {
       avatarUrl:"",
       loginname:"",
       replyContent: "",
-      actives: true
+      actives: true,
+      contents: null,
+      count: null
     }
   },
   components: {
     VComment,
-    vUserHeader
+    vUserHeader,
+    vConfirm
   },
   props: {
     accesstoken: {
@@ -52,8 +63,8 @@ export default {
     if (this.paramsId!==undefined) {
       this.getDataDetails()
     };
-    var titlesw = this.tabToName(this.theme.tab);
-    Bus.$emit('tite-er',titlesw)
+  },
+  beforeDestroy() {
   },
   watch: {
     '$route' (to, from) {
@@ -63,29 +74,53 @@ export default {
       }
     }
   },
-  // beforeRouteEnter (to, from, next) {
-  //   next(vm => {
-  //     var url = 'https://cnodejs.org/api/v1/topic/'+to.params.id;
-  //     this.$http.get(url)
-  //     .then((res) => {
-  //         this.theme = res.data.data;
-  //     },(err) => {
-  //       console.log(err)
-  //     })
-  //   })
-  // },
+  beforeRouteLeave (to, from, next) {
+    // 当路由离开时候让标题为null
+    if (this!==undefined) {
+      this.$store.commit('NotitleeText');
+      next();
+    }
+  },
   methods: {
+    confirmHandler(){
+      this.count = false;
+    },
     getDataDetails () {
-      var url = 'https://cnodejs.org/api/v1/topic/'+this.paramsId;
-      this.$http.get(url)
-      .then((res) => {
-        this.theme = res.data.data;
-        this.avatarUrl = this.theme.author.avatar_url;
-        this.loginname = this.theme.author.loginname;
-        this.replies = this.theme.replies;
-      },(err) => {
-        console.log(err)
-      })
+      // var url = 'https://cnodejs.org/api/v1/topic/'+this.paramsId;
+      // this.$http.get(url)
+      // .then((res) => {
+      //   this.theme = res.data.data;
+      //   if (this.theme.is_collect) {
+      //     this.actives=false;
+      //   }
+      //   this.avatarUrl = this.theme.author.avatar_url;
+      //   this.loginname = this.theme.author.loginname;
+      //   this.replies = this.theme.replies;
+      //   this.$store.commit('titlesText',this.theme.tab);
+      // },Response => {
+      //   this.contents = Response.body.error_msg;
+      //   this.count = true;
+      // });
+      var _this = this;
+      api.topic.getTopic(
+        _this,
+        this.paramsId, 
+        data => {
+        this.theme = data.data;
+        if (data.success) {
+          if (this.theme.is_collect) {
+            this.actives=false;
+          };
+          this.avatarUrl = this.theme.author.avatar_url;
+          this.loginname = this.theme.author.loginname;
+          this.replies = this.theme.replies;
+          this.$store.commit('titlesText',this.theme.tab);
+        }
+      }, err => {
+        this.contents = Response.body.error_msg;
+        this.count = true;
+      });
+
     },
     replyTheme () {
       var url = "https://cnodejs.org/api/v1/topic/"+this.paramsId+"/replies";
@@ -95,44 +130,49 @@ export default {
           this.replyContent = "";
           this.getDataDetails();
         }
-      }, err => {
-        console.log(this.accesstoken);
-        console.log(err);
+      }, Response => {
+        this.contents = Response.body.error_msg;
+        this.count = true;
       });
     },
-    tabToName(tab){
-      var name = "";
-      switch(tab) {
-        case "good": name = "置顶"; break;
-        case "ask": name = "问答"; break;
-        case "share": name = "分享"; break;
-        case "job": name = "招聘"; break;
-        default: name="未能识别"
-      }
-      return name;
-    },
     Collect() {
-      if (this.actives) {
-      var url = "https://cnodejs.org/api/v1/topic_collect/collect";
-        this.$http.post(url,
-          {accesstoken:this.accesstoken,topic_id:this.theme.id})
-        .then(res => {
-          if (res.data.success) {
-            alert('收藏成功')
-          }
-        });
-        this.actives = false;
+      console.log(this.accesstoken);
+      if (this.accesstoken!=="") {
+        if (this.actives) {
+        var url = "https://cnodejs.org/api/v1/topic_collect/collect";
+          this.$http.post(url,
+            {accesstoken:this.accesstoken,topic_id:this.theme.id})
+          .then(res => {
+            if (res.data.success) {
+              // this.$store.commit('increment',"收藏成功",2);
+              this.contents = "收藏成功";
+              this.count = true;
 
+            }
+          }, Response => {
+            this.contents = Response.body.error_msg;
+            this.count = true;
+          });
+          this.actives = false;
+
+        }else {
+          var urls = "https://cnodejs.org/api/v1/topic_collect/de_collect";
+          this.$http.post(urls,
+            {accesstoken:this.accesstoken,topic_id:this.theme.id})
+          .then(res => {
+            if (res.data.success) {
+              this.contents = "取消成功";
+              this.count = true;
+            }
+          }, Response => {
+            this.contents = Response.body.error_msg;
+            this.count = true;
+          });
+          this.actives = true;
+        }
       }else {
-        var urls = "https://cnodejs.org/api/v1/topic_collect/de_collect";
-        this.$http.post(urls,
-          {accesstoken:this.accesstoken,topic_id:this.theme.id})
-        .then(res => {
-          if (res.data.success) {
-            alert('取消成功')
-          }
-        });
-        this.actives = true;
+        this.contents = '你还未登录！'
+        this.count = true;
       }
     }
   }
@@ -209,4 +249,5 @@ export default {
   color: #fff;
   background-color: #999;
 }
+
 </style>

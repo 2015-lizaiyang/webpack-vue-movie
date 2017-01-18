@@ -10,8 +10,7 @@
         </div>
         <router-link to='/login' class="send-btn">
         </router-link>
-        <h2>{{ titless || temTitle }}</h2>
-        <h2>{{ titless }}</h2>
+        <h2>{{ titleContent || temTitle }}</h2>
       </header>
       <transition name="fade">
         <keep-alive>
@@ -20,21 +19,18 @@
       </transition>
     </div>
     <v-sidebar :shows='shows' :isLogin="isLogin" :loginname ="loginname" :avatarUrl ="avatarUrl"></v-sidebar>
-    <v-comment :isShowConfirm="isShowConfirm"></v-comment>
   </div>
 
 </template>
 
 <script>
-import vSidebar from '../components/vSidebar.vue';
-import vComment from '../components/vConfirm.vue'
+import vSidebar from '../components/vSidebar.vue'
+import { mapState } from 'vuex'
 export default {
   data: function () {
     return {
       title: '',
-      titless: null,
       shows: true,
-      isLogin: localStorage.loginname ? true : false,
       loginname: localStorage.loginname,
       avatarUrl: localStorage.avatar_url,
       accesstoken: localStorage.accesstoken,
@@ -47,23 +43,17 @@ export default {
       type: String,
     }
   },
+  computed: mapState({
+    isLogin: state => state.isLogin,
+    titleContent: state => state.titleContent
+  }),
   components: {
-    vSidebar,
-    vComment
+    vSidebar
   },
   created () {
     this.shows = true;
     Bus.$on('test',this.swqqq);
     Bus.$on('LoginActive',this.LoginGo);
-    Bus.$on('logout',this.logout);
-    Bus.$on('tite-er',function(msg) {
-      this.titless = msg
-    });
-    Bus.$on('confirms',function(msg) {
-      this.isShowConfirm = msg
-      console.log(msg);
-    });
-    
     this.$router.push({name:'list'});
   },
   methods: {
@@ -89,9 +79,6 @@ export default {
         this.accesstoken = ID;
       }
     },
-    logout () {
-      this.isLogin = false;
-    }
   }
 }
 </script>

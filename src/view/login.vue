@@ -7,15 +7,27 @@
       </div>
       <a @click="SubmitBtn" class='button button-glow button-rounded button-raised button-primary'>立即登录</a>
     </div>
+    <v-confirm :count="count">
+      <h3 slot="one">{{ contents }}</h3>
+      <div class="confirm-button" slot="footer">
+      <button @click.stop.prevent="confirmHandler">确认</button>
+      </div>
+    </v-confirm>
   </div>
 </template>
 
 <script>
+import vConfirm from '../components/vConfirm.vue';
 export default {
   data () {
     return {
       ID: null,
+      contents: null,
+      count:null
     }
+  },
+  components: {
+    vConfirm
   },
   methods:{
     SubmitBtn(){
@@ -30,17 +42,22 @@ export default {
               localStorage.id          = res.body.id;
               localStorage.accesstoken = vm.ID;
             Bus.$emit("LoginActive",res.body,this.ID);
+            this.$store.commit('IsLogin');
             vm.$router.push({name:'list'});
 
 
           };
-        },(err) => {
-          alert('您输入的Access Toke是错误,请到Cnode社区注册后去设置里找到Access Token');
-          console.log(err)
+        },Response => {
+          this.contents = Response.body.error_msg+", 请到Cnode社区注册后去设置里找到Access Token";
+          this.count = true;
         })
       }else {
-        alert('请输入Access Token');
+        this.contents = "请输入Access Token";
+          this.count = true;
       }
+    },
+    confirmHandler(){
+       this.count = false
     }
 
   }

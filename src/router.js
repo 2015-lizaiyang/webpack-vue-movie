@@ -25,28 +25,28 @@ export default [
         }
       },
       {
-        path: '/topic/:id',
+        path: '/list/topic/:id',
         name: 'topic',
         components: {
            part: resolve => require(['./view/details.vue'],resolve)
         }
       },
       {
-        path:'/login',// 退出登录
+        path:'/list/login',// 退出登录
         name:'login',
         components: {
            part: resolve => require(['./view/login.vue'],resolve)
         }
       },
       {
-        path: '/topics',
+        path: '/list/topics',
         name: 'topics',
         components: {
           part: resolve => require(['./view/topics.vue'],resolve)
         }
       },
       {
-        path: '/userDetails/:username',
+        path: '/list/userDetails/:username',
         name: 'userDetails',
         components: {
           part: resolve => require(['./view/userDetails.vue'],resolve)

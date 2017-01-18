@@ -1,9 +1,9 @@
 <template lang="html">
   <div class="tab-topic">
     <ul class="tab-list">
-      <li v-for="(vo,index) in allMessages" :class="{'active':activeitem === index}" @click="changeItem(index)">{{ index === 0?'创建的话题':'参与的话题' }}</li>
+      <li v-for="(vo,index) in allMessages" :class="{'active':this.activeitem === index}" @click="changeItem(index)">{{ index === 0?'创建的话题':'参与的话题' }}</li>
     </ul>
-    <div v-for="(item,index) in allMessages" class="tabpanel" :class="{'active':activeitem === index}">
+    <div v-for="(item,index) in allMessages" class="tabpanel" :class="{'active':this.activeitem === index}">
       <ul class="tab-content">
         <li v-for="vo in item">
           <div class="header">
@@ -14,14 +14,24 @@
         </li>
       </ul>
     </div>
+    <v-confirm :count="count">
+      <h3 slot="one">{{ contents }}</h3>
+      <div class="confirm-button" slot="footer">
+      <button @click.stop.prevent="confirmHandler">确认</button>
+      </div>
+    </v-confirm>
   </div>
 </template>
 <script type="text/javascript">
+import vConfirm from '../components/vConfirm.vue';
   export default {
     data() {
       return {
         activeItem: 0,
-        allMessages: []
+        allMessages: [],
+        contents: null,
+        count: null,
+        openUser:null
       }
     },
     props: {
@@ -29,24 +39,30 @@
         type: String,
       }
     },
+    components: {
+      vConfirm
+    },
     created () {
       this.getMessages()
     },
     methods: {
       getMessages () {
-        var url = 'https://cnodejs.org/api/v1/message/count';
-        console.log(this.accesstoken);
-        this.$http.get(url,{
-          accesstoken:'b928803a-e2db-496f-aae5-462b78a31f3d',
-        })
+        console.log(this.accesstoken)
+        var url = 'https://cnodejs.org/api/v1/messages?accesstoken=+'+ this.accesstoken;
+        this.$http.get(url)
         .then( res => {
+          console.log(res.data.data)
           console.log(Object.keys(res.data.data));
           Object.keys(res.data.data).forEach((item, index)=>{
-            this.$set(allMessages,index, res.data.data[item])
+            this.$set(this.allMessages,index, res.data.data[item])
           })
         }, Response => {
-          console.log(Response.body.error_msg);
+          this.contents = Response.body.error_msg;
+          this.count = true;
         })
+      },
+      confirmHandler(){
+        this.count = false
       }
     }
   }

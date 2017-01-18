@@ -16,10 +16,18 @@
       <img class="logo" src="//o4j806krb.qnssl.com/public/images/cnodejs_light.svg" alt="vue-logo">
     </nav>
     <div class="shade-box" :class="{'hide':this.shows}" @click="shade"></div>
+    <v-confirm :count="count">
+      <h3 slot="one">确认注销当前账号吗？</h3>
+      <div class="confirm-button" slot="footer">
+        <button @click.stop.prevent="hide">取消</button>
+        <button @click.stop.prevent="confirmHandler">确认</button>
+      </div>
+    </v-confirm>
   </div>
 </template>
 
 <script>
+import vConfirm from './vConfirm.vue';
 export default {
     data () {
       return {
@@ -59,27 +67,7 @@ export default {
             view: "about"
           }]
         ],
-      }
-    },
-    methods: {
-      Choose (vo, tab) {
-        Bus.$emit('test');
-        this.$router.push({path:'/'+vo.view,query:{tab: vo.tab}});
-      },
-      shade() {
-        Bus.$emit('test');
-      },
-      logout() {
-        Bus.$emit('confirms',true);
-      },
-      GoLogin() {
-        Bus.$emit('test');
-        this.$router.push({name:'login'});
-      },
-      goUser () {
-        Bus.$emit('test');
-        this.$route.params.username = this.loginname
-        this.$router.push({name:'userDetails'});
+        count: null
       }
     },
     props: {
@@ -97,7 +85,43 @@ export default {
       loginname: {
         type: String,
       },
-    }
+    },
+    components: {
+      vConfirm
+    },
+    created() {
+    },
+    methods: {
+      Choose (vo, tab) {
+        Bus.$emit('test');
+        this.$router.push({path:'/'+vo.view,query:{tab: vo.tab}});
+      },
+      shade() {
+        Bus.$emit('test');
+      },
+      logout() {
+        this.count = true;
+      },
+      GoLogin() {
+        Bus.$emit('test');
+        this.$router.push({name:'login'});
+      },
+      goUser () {
+        Bus.$emit('test');
+        this.$route.params.username = this.loginname
+        this.$router.push({name:'userDetails'});
+      },
+      hide () {
+        this.count = false;
+      },
+      confirmHandler(){
+        localStorage.loginname = localStorage.avatar_url = localStorage.user_id = localStorage.accesstoken = "";
+        Bus.$emit('test');
+        this.count = false;
+        this.$store.commit('IsLogin');
+        this.$router.push({path: "/list"})
+      }
+    },
 }
 </script>
 
@@ -207,6 +231,13 @@ export default {
       height: 25px;
       margin: 0 0 10px -53px;
     }
+  }
+}
+
+.confirm-button {
+  button {
+    width: 50%;
+    font-family: "微软雅黑"
   }
 }
 </style>

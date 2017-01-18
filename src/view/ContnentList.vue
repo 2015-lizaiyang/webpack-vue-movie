@@ -18,8 +18,8 @@
 </template>
 
 <script>
-// import serverData from '../server-address.js'
-import vUserHeader from '../components/vUserHeader'
+import vUserHeader from '../components/vUserHeader';
+import api from '../api.js'
 export default {
   data () {
     return {
@@ -49,12 +49,25 @@ export default {
   },
   methods: {
     GetData () {
-      var url = 'https://cnodejs.org/api/v1/topics/?tab='+this.tab+'&page='+this.page+'&limit='+this.limit;
-      this.$http.get(url).then((res) => {
-        this.list = res.data.data;
+      // var url = 'https://cnodejs.org/api/v1/topics/?tab='+this.tab+'&page='+this.page+'&limit='+this.limit;
+      // this.$http.get(url).then((res) => {
+      //   this.list = res.data.data;
+      //   this.isLoading =  false;
+      // },(err) => {
+      //   console.log(err)
+      // })
+      var _this = this;
+      api.topic.getTopicList(_this,{
+        tab:this.tab,
+        page:this.page,
+        limit:this.limit
+      }, data => {
+        if (data.success) {
+          this.list = data.data;
         this.isLoading =  false;
-      },(err) => {
-        console.log(err)
+        }
+      }, err => {
+        console.log(err);
       })
     },
     doThis () {
@@ -80,7 +93,8 @@ export default {
       this.GetData();
     },
     LinkContent(ids) {
-      this.$router.push({path:'/topic/'+ids});
+
+      this.$router.push({path:'/list/topic/'+ids});
     }
   }
 }
