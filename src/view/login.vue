@@ -10,7 +10,7 @@
     <v-confirm :count="count">
       <h3 slot="one">{{ contents }}</h3>
       <div class="confirm-button" slot="footer">
-      <button @click.stop.prevent="confirmHandler">确认</button>
+        <button @click.stop.prevent="confirmHandler">确认</button>
       </div>
     </v-confirm>
   </div>
@@ -18,6 +18,7 @@
 
 <script>
 import vConfirm from '../components/vConfirm.vue';
+import api from '../api.js'
 export default {
   data () {
     return {
@@ -32,28 +33,42 @@ export default {
   methods:{
     SubmitBtn(){
       if (this.ID!==null) {
-        var vm = this;
-        vm.$http.post('https://cnodejs.org/api/v1/accesstoken',{accesstoken:vm.ID})
-        .then((res) => {
-          //  b928803a-e2db-496f-aae5-462b78a31f3d
-          if (res.body.success) {
-              localStorage.loginname   = res.body.loginname;
-              localStorage.avatar_url  = res.body.avatar_url;
-              localStorage.id          = res.body.id;
-              localStorage.accesstoken = vm.ID;
-            Bus.$emit("LoginActive",res.body,this.ID);
-            this.$store.commit('IsLogin');
-            vm.$router.push({name:'list'});
-
-
-          };
-        },Response => {
-          this.contents = Response.body.error_msg+", 请到Cnode社区注册后去设置里找到Access Token";
+        // var vm = this;
+        // vm.$http.post('https://cnodejs.org/api/v1/accesstoken',{accesstoken:vm.ID})
+        // .then((res) => {
+        //   //  b928803a-e2db-496f-aae5-462b78a31f3d
+        //   if (res.body.success) {
+        //       localStorage.loginname   = res.body.loginname;
+        //       localStorage.avatar_url  = res.body.avatar_url;
+        //       localStorage.id          = res.body.id;
+        //       localStorage.accesstoken = vm.ID;
+        //     Bus.$emit("LoginActive",res.body,this.ID);
+        //     this.$store.commit('IsLogin');
+        //     vm.$router.push({name:'list'});
+        //   };
+        // },Response => {
+        //   this.contents = Response.body.error_msg+", 请到Cnode社区注册后去设置里找到Access Token";
+        //   this.count = true;
+        // });
+        var _this = this;
+        api.user.accessToken(_this,{accesstoken:this.ID}, 
+        data => {
+            if (data.success) {
+              localStorage.loginname   = data.loginname;
+              localStorage.avatar_url  = data.avatar_url;
+              localStorage.id          = data.id;
+              localStorage.accesstoken = this.ID;
+              Bus.$emit("LoginActive",data,this.ID);
+              this.$store.commit('IsLogin');
+              this.$router.push({name:'list'});
+            };
+        },err => {
+          this.contents = err+", 请到Cnode社区注册后去设置里找到Access Token";
           this.count = true;
-        })
+        });
       }else {
         this.contents = "请输入Access Token";
-          this.count = true;
+        this.count = true;
       }
     },
     confirmHandler(){

@@ -26,17 +26,27 @@
           </div>
         </li>
       </ul>
+      <v-confirm :count="count">
+        <h3 slot="one">{{ contents }}</h3>
+        <div class="confirm-button" slot="footer">
+        <button @click.stop.prevent="confirmHandler">确认</button>
+        </div>
+      </v-confirm>
   </div>
 </template>
 
 <script>
-import vUserHeader from './vUserHeader.vue'
+import vUserHeader from './vUserHeader.vue';
+import api from '../api.js';
+import vConfirm from './vConfirm.vue'
 export default {
   data() {
     return {
       replyContent:'',
       toggleVal: null,
-      replyContents:""
+      replyContents:"",
+      contents: null,
+      count: null
     }
   },
   props: {
@@ -57,11 +67,15 @@ export default {
     }
   },
   components: {
-    vUserHeader
+    vUserHeader,
+    vConfirm
   },
   created(){
   },
   methods: {
+    confirmHandler(){
+      this.count = false;
+    },
     ToggleReply(index,vo){
       this.replyContents = "@"+vo.author.loginname;
       if (this.toggleVal==index) {
@@ -78,42 +92,80 @@ export default {
       console.log(this.userId);
       var reply = this.replies[index];
       if (this.loginname !=reply.author.loginname ) {
-        var url = "https://cnodejs.org/api/v1/reply/"+reply.id+"/ups";
-        this.$http.post(url,{accesstoken:this.accesstoken})
-        .then((res) => {
-          if (res.data.success) {
-            if (res.data.action === "down") {
-              var index = reply.ups.indexOf(this.userId);
-              reply.ups.splice(index, 1);
-            }else {
-              reply.ups.push(this.userId);
+        // var url = "https://cnodejs.org/api/v1/reply/"+reply.id+"/ups";
+        // this.$http.post(url,{accesstoken:this.accesstoken})
+        // .then((res) => {
+        //   if (res.data.success) {
+        //     if (res.data.action === "down") {
+        //       var index = reply.ups.indexOf(this.userId);
+        //       reply.ups.splice(index, 1);
+        //     }else {
+        //       reply.ups.push(this.userId);
+        //     }
+        //   }
+        // },Response => {
+        //   console.log(Response.body.error_msg);
+        // });
+        var _this = this;
+        api.replies.ups(
+          _this,
+          reply.id,
+          {accesstoken:this.accesstoken}, 
+          data => {
+            if (data.success) {
+              if (data.action === "down") {
+                var index = reply.ups.indexOf(this.userId);
+                reply.ups.splice(index, 1);
+              }else {
+                reply.ups.push(this.userId);
+              }
             }
-          }
-        },Response => {
-          console.log(Response.body.error_msg);
-        })
+        }, err => {
+          console.log(err)
+          this.contents = err;
+          this.count = true;
+          console.log(this.count);
+        });
+
       }else {
-        alert("不能为自己点赞哦。^_^");
+        this.contents = "不能为自己点赞哦。^_^";
+        this.count = true;
       }
     },
     Replys(index) {
       var replyId = this.replies[index].id
-      var url = "https://cnodejs.org/api/v1/topic/"+this.paramsId+"/replies";
-      var optionsReply = {
+      // var url = "https://cnodejs.org/api/v1/topic/"+this.paramsId+"/replies";
+      // var optionsReply = {
+      //   accesstoken: this.accesstoken,
+      //   content: this.replyContents,
+      //   reply_id: replyId // 回复别人的评论
+      // };
+      // this.$http.post(url,optionsReply)
+      // .then((res) => {
+      //   if (res.data.success) {
+      //     this.$parent.getDataDetails();
+      //     this.toggleVal=null
+      //   }
+      // }, Response => {
+      //   console.log(Response.body.error_msg);
+      // });
+
+      var _this = this;
+      api.replies.reply(
+        _this,
+        this.paramsId,
+        {
         accesstoken: this.accesstoken,
         content: this.replyContents,
         reply_id: replyId // 回复别人的评论
-      };
-      this.$http.post(url,optionsReply)
-      .then((res) => {
-        console.log(res)
-        if (res.data.success) {
+      }, data => {
+        if (data.success) {
           this.$parent.getDataDetails();
           this.toggleVal=null
         }
-      }, Response => {
-        console.log(Response.body.error_msg);
-      })
+      }, err => {
+        console.log(err);
+      });
     }
   }
 }

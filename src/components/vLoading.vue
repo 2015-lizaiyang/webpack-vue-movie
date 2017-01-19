@@ -1,12 +1,27 @@
 <template lang="html">
-  <div class="boxLoading"></div>
+  <div class="loading" v-show="activeLoading">
+    <div class="boxLoading"></div>
+  </div>
 </template>
 <script type="text/javascript">
+import {mapState} from 'vuex'
   export default {
-
+    computed: mapState({
+      activeLoading: state => state.activeLoading
+    }),
   }
 </script>
 <style type="text/css" lang="sass">
+.loading {
+  position: fixed;
+  top: 30px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  z-index: 999;
+  transition: all 2s 2s ease;
+}
 .boxLoading {  
   width: 50px;
   height: 50px;

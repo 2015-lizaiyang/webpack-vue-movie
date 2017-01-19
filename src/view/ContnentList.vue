@@ -14,12 +14,13 @@
       </li>
     </ul>
     <button class="loading-btn button button-glow button-rounded button-caution" @click='GetListData'>{{ isLoading ? "正在加载..." : "加载更多" }}</button>
+
   </div>
 </template>
 
 <script>
 import vUserHeader from '../components/vUserHeader';
-import api from '../api.js'
+import api from '../api.js';
 export default {
   data () {
     return {
@@ -32,7 +33,7 @@ export default {
     }
   },
   components: {
-    vUserHeader
+    vUserHeader,
   },
   watch: {
     '$route' (to, from) {
@@ -41,6 +42,7 @@ export default {
         this.limit = 30
         this.tab = query.tab || 'all'
         this.GetData();
+        console.log(this.tab);
       }
     }
   },
@@ -56,15 +58,18 @@ export default {
       // },(err) => {
       //   console.log(err)
       // })
+      this.$store.commit('activeLoadings',true);
       var _this = this;
-      api.topic.getTopicList(_this,{
+      var query = {
         tab:this.tab,
         page:this.page,
         limit:this.limit
-      }, data => {
+      }
+      api.topic.getTopicList(_this,query, data => {
         if (data.success) {
           this.list = data.data;
-        this.isLoading =  false;
+          this.$store.commit('activeLoadings',false);
+            this.isLoading =  false;
         }
       }, err => {
         console.log(err);
@@ -94,7 +99,7 @@ export default {
     },
     LinkContent(ids) {
 
-      this.$router.push({path:'/list/topic/'+ids});
+      this.$router.push({path:'/topic/'+ids});
     }
   }
 }
@@ -104,7 +109,7 @@ export default {
 <style lang="sass" scoped>
 .ContnentList {
   color:#222;
-  margin: 45px 0 0 0;
+  padding: 45px 0 0 0;
 }
 .content-list {
   padding: 10px;

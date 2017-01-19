@@ -22,6 +22,7 @@
 </template>
 <script>
 import vConfirm from '../components/vConfirm.vue';
+import api from '../api.js'
   export default {
     data () {
       return {
@@ -58,25 +59,44 @@ import vConfirm from '../components/vConfirm.vue';
           this.contents = "主题内容为空";
           this.count = true;
         }else {
-          var url = "https://cnodejs.org/api/v1/topics/";
-          var postOptions = {
+          // var url = "https://cnodejs.org/api/v1/topics/";
+          // var postOptions = {
+          //   tab:        this.tabSelect,
+          //   title:      this.postTitle,
+          //   content:    this.postContent,
+          //   accesstoken: this.accesstoken,
+          // };
+          // this.$http.post(url,postOptions)
+          // .then((res) => {
+          // if (res.data.success) {
+          //   // this.tabSelect   = "";
+          //   // this.postTitle   = "";
+          //   // this.postContent = "";
+          //   this.$router.push({name:'list'});
+          // }
+          // }, Response => {
+          //   this.contents = Response.body.error_msg;
+          //   this.count = true;
+          // });
+
+          var _this = this;
+          api.topic.newTopic(_this,{
             tab:        this.tabSelect,
             title:      this.postTitle,
             content:    this.postContent,
             accesstoken: this.accesstoken,
-          };
-          this.$http.post(url,postOptions)
-          .then((res) => {
-          if (res.data.success) {
-            // this.tabSelect   = "";
-            // this.postTitle   = "";
-            // this.postContent = "";
-            this.$router.push({name:'list'});
-          }
-          }, Response => {
-            this.contents = Response.body.error_msg;
+          },data => {
+            if (data.success) {
+              // this.tabSelect   = "";
+              // this.postTitle   = "";
+              // this.postContent = "";
+              this.$router.push({name:'list'});
+            }
+          }, err => {
+            this.contents = err;
             this.count = true;
           });
+
         }
       },
       confirmHandler(){

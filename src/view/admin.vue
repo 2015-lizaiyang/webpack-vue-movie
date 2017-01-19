@@ -1,31 +1,34 @@
 <template lang="html">
   <div class="">
-    <div class="admin-animation" :class="{'animation':this.shows}">
-      <header class="header">
-        <div class="menu-btn" @click='ShowsBox'>
-          <i class="iconfont">&#xe67c;</i>
-        </div>
-        <div class="send-btn" @click="LoginBtn">
-          <i class="iconfont">&#xe674;</i>
-        </div>
-        <router-link to='/login' class="send-btn">
-        </router-link>
-        <h2>{{ titleContent || temTitle }}</h2>
-      </header>
+    <v-loading></v-loading>
+    <header class="header admin-animation" :class="{'animation':this.shows}">
+      <div class="menu-btn" @click='ShowsBox'>
+        <i class="iconfont">&#xe67c;</i>
+      </div>
+      <div class="send-btn" @click="LoginBtn">
+        <i class="iconfont">&#xe674;</i>
+      </div>
+      <router-link to='/login' class="send-btn">
+      </router-link>
+      <h2>{{ titleContent || temTitle }}</h2>
+    </header>
+    <main class="admin-animation" :class="{'animation':this.shows}">
       <transition name="fade">
         <keep-alive>
           <router-view name='part' :accesstoken="accesstoken" :loginname="loginname" :userId="userId"></router-view>
         </keep-alive>
       </transition>
-    </div>
-    <v-sidebar :shows='shows' :isLogin="isLogin" :loginname ="loginname" :avatarUrl ="avatarUrl"></v-sidebar>
+    </main>
+    <v-sidebar :shows='shows' :isLogin="isLogin" :loginname ="loginname" :avatarUrl ="avatarUrl" :accesstoken="accesstoken"></v-sidebar>
   </div>
 
 </template>
 
 <script>
-import vSidebar from '../components/vSidebar.vue'
-import { mapState } from 'vuex'
+import vSidebar from '../components/vSidebar.vue';
+import vLoading from '../components/vLoading.vue';
+import { mapState } from 'vuex';
+import api from '../api.js';
 export default {
   data: function () {
     return {
@@ -48,13 +51,33 @@ export default {
     titleContent: state => state.titleContent
   }),
   components: {
-    vSidebar
+    vSidebar,
+    vLoading
   },
   created () {
     this.shows = true;
     Bus.$on('test',this.swqqq);
     Bus.$on('LoginActive',this.LoginGo);
     this.$router.push({name:'list'});
+  },
+  watch:{
+    shows: function(){
+      if(!this.shows){
+        this.scrollTop = document.body.scrollTop
+        document.body.style.marginTop = -this.scrollTop + "px"
+        document.querySelector("header").style.marginTop = this.scrollTop + "px"
+        document.body.style.position = "fixed"
+      }else{
+
+        setTimeout(() => {
+          document.body.style.position = "static"
+          document.querySelector("header").style.marginTop = 0 + "px"
+          document.body.style.marginTop = 0 + "px"
+          document.body.scrollTop = this.scrollTop
+
+        },300)
+      }
+    }
   },
   methods: {
     ShowsBox() {
@@ -77,6 +100,7 @@ export default {
         this.avatarUrl   = msg.avatar_url;
         this.userId      = msg.id;
         this.accesstoken = ID;
+        console.log(this.accesstoken)
       }
     },
   }
@@ -85,9 +109,6 @@ export default {
 
 <style lang="sass" scoped>
 .admin-animation {
-  position: absolute;
-  top: 0;
-  left: 0;
   height: 100%;
   width: 100%;
   -webkit-transition: all .3s ease-out;
@@ -104,14 +125,14 @@ export default {
   transform: translateX(0);
 }
 .header {
-  display: block;
-  width: 100%;
-  height: 47px;
-  position: fixed;
+  position:fixed;
+  top: 0;
   left: 0;
   right: 0;
-  top: 0;
+  width: 100%;
+  height: 47px;
   z-index: 999;
+  overflow: hidden;
   background-color: hsla(0,0%,100%,.5);
   box-shadow: 0 0 4px rgba(0,0,0,.25);
 
@@ -144,4 +165,6 @@ export default {
 .fade-enter, .fade-leave-active {
   opacity: 0
 }
+
+
 </style>

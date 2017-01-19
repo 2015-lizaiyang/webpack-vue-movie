@@ -44,7 +44,7 @@
         }
       },
       GetContent() {
-        this.$router.push({path:'/list/topic/'+this.contentId});
+        this.$router.push({path:'/topic/'+this.contentId});
       }
     }
   }

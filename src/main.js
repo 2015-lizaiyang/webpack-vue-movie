@@ -25,7 +25,9 @@ var store = new Vuex.Store({
     // 控制长期登录
     isLogin: localStorage.loginname ? true : false,
     // 解决路由到话题页面时，标题为这个话题的分类
-    titleContent: null
+    titleContent: null,
+    unreadCount: null,
+    activeLoading: false,
   },
   mutations: {
     IsLogin: (state) => {
@@ -47,7 +49,13 @@ var store = new Vuex.Store({
     },
     NotitleeText: (state) => {
       state.titleContent = null;
-    } 
+    },
+    unreadCounts:(state,msg) => {
+      state.unreadCount = msg;
+    },
+    activeLoadings:(state,msg) => {
+      state.activeLoading = msg
+    }
   }
 });
 

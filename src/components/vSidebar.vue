@@ -1,6 +1,6 @@
 ﻿<template lang="html">
-  <div>
-    <nav class="vSidebar" :class="{'active':shows}">
+  <div class="shade-box" :class="{'hide':this.shows}" @click.stop.prevent="shade" @touchmove.stop.prevent>
+    <nav class="vSidebar" :class="{'active':shows}" @click.stop.prevent>
       <div v-if="isLogin" @click="goUser" class="headers-user-img">
         <img :src="avatarUrl" alt="">
         <p>{{ loginname }}</p>
@@ -10,12 +10,15 @@
         <h2>登录</h2>
       </div>
       <ul v-for="(items,index) in NavList" class="nav-list">
-        <li v-for="vo in items" @click="Choose(vo,vo.tab)"><i class="iconfont" v-html='vo.icon'></i><span>{{ vo.name }}</span></li>
+        <li v-for="vo in items" @click="Choose(vo,vo.tab)" :class="{'unread':vo.view==='message' && unreadCount !== 0}">
+          <i class="iconfont" v-html='vo.icon'></i>
+          <span>{{ vo.name }}<p class="unreadCounts" v-if="vo.view==='message' && unreadCount !== 0">{{ unreadCount }}</p></span>
+        </li>
         <li v-if="isLogin && index==NavList.length -1" @click="logout"><i class="iconfont">&#xe772;</i><span>注销</span></li>
       </ul>
       <img class="logo" src="//o4j806krb.qnssl.com/public/images/cnodejs_light.svg" alt="vue-logo">
     </nav>
-    <div class="shade-box" :class="{'hide':this.shows}" @click="shade"></div>
+    <!-- <div class="shade-box" :class="{'hide':this.shows}" @click.stop.prevent="shade"></div> -->
     <v-confirm :count="count">
       <h3 slot="one">确认注销当前账号吗？</h3>
       <div class="confirm-button" slot="footer">
@@ -28,6 +31,8 @@
 
 <script>
 import vConfirm from './vConfirm.vue';
+import api from '../api.js';
+import {mapState} from 'vuex'
 export default {
     data () {
       return {
@@ -85,11 +90,19 @@ export default {
       loginname: {
         type: String,
       },
+      accesstoken:{
+        type: String,
+      }
     },
+    computed: mapState({
+    unreadCount: state => state.unreadCount,
+    }),
     components: {
       vConfirm
     },
     created() {
+      this.getUnreadCount();
+      this.$store.commit('unreadCounts',);
     },
     methods: {
       Choose (vo, tab) {
@@ -120,6 +133,18 @@ export default {
         this.count = false;
         this.$store.commit('IsLogin');
         this.$router.push({path: "/list"})
+      },
+      getUnreadCount() {
+        var _this = this;
+        api.message.messageCount(_this,
+          this.accesstoken,
+          data => {
+            if (data.success) {
+              this.$store.commit('unreadCounts',data.data);
+            }
+        }, err => {
+
+        });
       }
     },
 }
@@ -132,6 +157,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1001;
   background-color: rgba(0, 0, 0, .67);
   transition: all .2s ease-in-out;
   -webkit-transform: translateX(0);
@@ -219,8 +245,10 @@ export default {
       }
 
       span {
+        display: inline-block;
+        position: relative;
         font-size: 14px;
-        margin: 0 0 0 8px;
+        // margin: 0 0 0 8px;
       }
     }
 
@@ -240,4 +268,35 @@ export default {
     font-family: "微软雅黑"
   }
 }
+
+.unreadCounts {
+  position: absolute;
+  top: -3px;
+  font-size: 12px;
+  right: -15px;
+  background-color: #f74242;
+  border-radius: 5px;
+  color: #fff;
+  text-align: center;
+  width: 20px;
+}
+
+  li.unread .iconfont{
+    color: #f74242;
+    display: inline-block;
+    transform-origin: 50% 0;
+    animation: shake 1.5s linear infinite;
+  }
+
+  @keyframes shake{
+    0%,100%{
+      transform: rotateZ(0deg);
+    }
+    20%{
+      transform: rotateZ(15deg);
+    }
+    80%{
+      transform: rotateZ(-15deg);
+    }
+  }
 </style>

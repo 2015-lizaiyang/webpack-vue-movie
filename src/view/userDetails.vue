@@ -32,10 +32,18 @@
         </ul>
       </div>
     </div>
+    <v-confirm :count="count">
+      <h3 slot="one">{{ contents }}</h3>
+      <div class="confirm-button" slot="footer">
+        <button @click.stop.prevent="confirmHandler">确认</button>
+      </div>
+    </v-confirm>
   </div>
 </template>
 <script type="text/javascript">
 import vUserHeader from '../components/vUserHeader.vue';
+import vConfirm from '../components/vConfirm.vue';
+import api from '../api.js';
   export default {
     data() {
       return {
@@ -43,11 +51,14 @@ import vUserHeader from '../components/vUserHeader.vue';
         userDetails: {},
         detailsTitle: [],
         userName: null,
-        openUser: true
+        openUser: true,
+        contents: null,
+        count: null,
       }
     },
     components: {
       vUserHeader,
+      vConfirm
     },
     watch: {
     '$route' (to, from) {
@@ -62,15 +73,29 @@ import vUserHeader from '../components/vUserHeader.vue';
     methods: {
       getUserDetails(names){
         var userName = this.userName || localStorage.loginname;
-        var url = "https://cnodejs.org/api/v1/user/" + userName;
-        this.$http.get(url).then((res) => {
-          this.userDetails = res.data.data;
-          this.$set(this.detailsTitle,0,this.userDetails.recent_topics);
-          this.$set(this.detailsTitle,1,this.userDetails.recent_replies);
-        })
+        // var url = "https://cnodejs.org/api/v1/user/" + userName;
+        // this.$http.get(url).then((res) => {
+        //   this.userDetails = res.data.data;
+        //   this.$set(this.detailsTitle,0,this.userDetails.recent_topics);
+        //   this.$set(this.detailsTitle,1,this.userDetails.recent_replies);
+        // });
+        var  _this = this;
+        api.user.userDetails(_this,userName, 
+          data => {
+            this.userDetails = data.data;
+            this.$set(this.detailsTitle,0,this.userDetails.recent_topics);
+            this.$set(this.detailsTitle,1,this.userDetails.recent_replies);
+          }, err => {
+            this.contents = err;
+            this.count = true;
+        });
+
       },
       changeItem(index) {
         this.activeitem = index;
+      },
+      confirmHandler(){
+        this.count = false
       }
     }
   }

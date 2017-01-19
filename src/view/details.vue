@@ -117,21 +117,40 @@ export default {
           this.$store.commit('titlesText',this.theme.tab);
         }
       }, err => {
-        this.contents = Response.body.error_msg;
+        this.contents = err;
         this.count = true;
       });
 
     },
     replyTheme () {
-      var url = "https://cnodejs.org/api/v1/topic/"+this.paramsId+"/replies";
-      this.$http.post(url,{accesstoken:this.accesstoken,content:this.replyContent,reply_id:this.paramsId})
-      .then((res) => {
-        if (res.data.success) {
-          this.replyContent = "";
-          this.getDataDetails();
-        }
-      }, Response => {
-        this.contents = Response.body.error_msg;
+      // var url = "https://cnodejs.org/api/v1/topic/"+this.paramsId+"/replies";
+      // this.$http.post(url,{accesstoken:this.accesstoken,content:this.replyContent,reply_id:this.paramsId})
+      // .then((res) => {
+      //   if (res.data.success) {
+      //     this.replyContent = "";
+      //     this.getDataDetails();
+      //   }
+      // }, Response => {
+      //   this.contents = Response.body.error_msg;
+      //   this.count = true;
+      // });
+      var _this = this;
+      var querys = {
+        accesstoken:this.accesstoken,
+        content:this.replyContent,
+        reply_id:this.paramsId
+      }
+      api.replies.reply(
+        _this,
+        this.paramsId,
+        querys,
+        data => {
+          if (data.success) {
+            this.replyContent = "";
+            this.getDataDetails();
+          }
+      }, err => {
+        this.contents = err;
         this.count = true;
       });
     },
@@ -139,35 +158,62 @@ export default {
       console.log(this.accesstoken);
       if (this.accesstoken!=="") {
         if (this.actives) {
-        var url = "https://cnodejs.org/api/v1/topic_collect/collect";
-          this.$http.post(url,
-            {accesstoken:this.accesstoken,topic_id:this.theme.id})
-          .then(res => {
-            if (res.data.success) {
-              // this.$store.commit('increment',"收藏成功",2);
+          // var url = "https://cnodejs.org/api/v1/topic_collect/collect";
+          // this.$http.post(url,
+          //   {accesstoken:this.accesstoken,topic_id:this.theme.id})
+          // .then(res => {
+          //   if (res.data.success) {
+          //     // this.$store.commit('increment',"收藏成功",2);
+          //     this.contents = "收藏成功";
+          //     this.count = true;
+          //   }
+          // }, Response => {
+          //   this.contents = Response.body.error_msg;
+          //   this.count = true;
+          // });
+          var _this = this;
+          api.topicCollect.collect(_this,{
+            accesstoken:this.accesstoken,
+            topic_id:this.theme.id
+          }, data => {
+            if (data.success) {
               this.contents = "收藏成功";
               this.count = true;
-
             }
-          }, Response => {
-            this.contents = Response.body.error_msg;
+          }, err => {
+            this.contents = err;
             this.count = true;
           });
           this.actives = false;
 
+
         }else {
-          var urls = "https://cnodejs.org/api/v1/topic_collect/de_collect";
-          this.$http.post(urls,
-            {accesstoken:this.accesstoken,topic_id:this.theme.id})
-          .then(res => {
-            if (res.data.success) {
+          // var urls = "https://cnodejs.org/api/v1/topic_collect/de_collect";
+          // this.$http.post(urls,
+          //   {accesstoken:this.accesstoken,topic_id:this.theme.id})
+          // .then(res => {
+          //   if (res.data.success) {
+          //     this.contents = "取消成功";
+          //     this.count = true;
+          //   }
+          // }, Response => {
+          //   this.contents = Response.body.error_msg;
+          //   this.count = true;
+          // });
+          var _this = this;
+          api.topicCollect.deCollect(_this,{
+            accesstoken:this.accesstoken,
+            topic_id:this.theme.id
+          }, data => {
+            if (data.success) {
               this.contents = "取消成功";
               this.count = true;
             }
-          }, Response => {
-            this.contents = Response.body.error_msg;
+          }, err => {
+            this.contents = err;
             this.count = true;
           });
+
           this.actives = true;
         }
       }else {
