@@ -51,7 +51,7 @@ export default {
         //   this.count = true;
         // });
         var _this = this;
-        api.user.accessToken(_this,{accesstoken:this.ID}, 
+        api.user.accessToken(_this,{accesstoken:this.ID},
         data => {
             if (data.success) {
               localStorage.loginname   = data.loginname;
@@ -81,22 +81,16 @@ export default {
 
 <style lang="sass" scoped>
   .login-main {
-    // margin: 60px 0 0 0; 
+    // margin: 60px 0 0 0;
     // width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    height: 100%;
+    position:absolute;
+    height:100% ; width:100%;
     background: url('../assets/img/login-backgeound.jpg') no-repeat center /cover;
 
     .login-box {
-      position: relative;
       height: 340px;
-      width: 320px;
-      top: 40%;
-      margin: 0 auto;
+      width: 90%;
+      margin: 80% auto 60px auto;
      transform: translateY(-50%);
     }
 
@@ -104,7 +98,7 @@ export default {
       font-size: 50px;
       text-align: center;
       // line-height: 100px;
-      margin: 0 0 50px 0; 
+      margin: 0 0 50px 0;
       text-shadow: 1px 2px 4px #333;
       color: #fff;
     }

@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="">
+  <div class="" @resize="Resizes">
     <v-loading></v-loading>
     <header class="header admin-animation" :class="{'animation':this.shows}">
       <div class="menu-btn" @click='ShowsBox'>
@@ -12,7 +12,7 @@
       </router-link>
       <h2>{{ titleContent || temTitle }}</h2>
     </header>
-    <main class="admin-animation" :class="{'animation':this.shows}">
+    <main class="admin-animation" :class="{'animation':this.shows}" :style="{width:sizeWHs.widths+'px',height:sizeWHs.heights+'px'}">
       <transition name="fade">
         <keep-alive>
           <router-view name='part' :accesstoken="accesstoken" :loginname="loginname" :userId="userId"></router-view>
@@ -38,7 +38,12 @@ export default {
       avatarUrl: localStorage.avatar_url,
       accesstoken: localStorage.accesstoken,
       userId: localStorage.id,
-      isShowConfirm: false
+      isShowConfirm: false,
+      sizeWHs: {
+        widths: document.body.clientWidth,
+        heights: document.body.clientHeight,
+      },
+
     }
   },
    props: {
@@ -56,17 +61,30 @@ export default {
   },
   created () {
     this.shows = true;
-    Bus.$on('test',this.swqqq);
+    Bus.$on('test',this.TestShows);
     Bus.$on('LoginActive',this.LoginGo);
     this.$router.push({name:'list'});
+    var that = this;
+    this.sizeWH();
+    window.onresize = () => {
+      return (() => {
+          that.sizeWHs.widths  = window.innerWidth;
+          that.sizeWHs.heights = window.innerHeight;
+      })()
+    }
+  },
+  mounted() {
   },
   watch:{
     shows: function(){
+      this.sizeWH();
       if(!this.shows){
         this.scrollTop = document.body.scrollTop
         document.body.style.marginTop = -this.scrollTop + "px"
         document.querySelector("header").style.marginTop = this.scrollTop + "px"
-        document.body.style.position = "fixed"
+        document.body.style.position = "fixed";
+
+
       }else{
 
         setTimeout(() => {
@@ -74,7 +92,6 @@ export default {
           document.querySelector("header").style.marginTop = 0 + "px"
           document.body.style.marginTop = 0 + "px"
           document.body.scrollTop = this.scrollTop
-
         },300)
       }
     }
@@ -83,7 +100,7 @@ export default {
     ShowsBox() {
       this.shows = false
     },
-    swqqq() {
+    TestShows() {
       this.shows = true
     },
     LoginBtn () {
@@ -103,20 +120,31 @@ export default {
         console.log(this.accesstoken)
       }
     },
+    sizeWH () {
+      this.sizeWHs.widths  = window.innerWidth;
+      this.sizeWHs.heights = window.innerHeight;
+    },
+    Resizes () {
+      this.sizeWH();
+    }
   }
 }
 </script>
 
 <style lang="sass" scoped>
 .admin-animation {
-  height: 100%;
-  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   -webkit-transition: all .3s ease-out;
   -moz-transition: all .3s ease-out;
   transition: all .3s ease-out;
   -webkit-transform: translateX(235px);
   transform: translateX(235px);
 }
+
 .animation {
   -webkit-transition: all .3s ease-out;
   -moz-transition: all .3s ease-out;
@@ -124,6 +152,7 @@ export default {
   -webkit-transform: translateX(0);
   transform: translateX(0);
 }
+
 .header {
   position:fixed;
   top: 0;
@@ -158,10 +187,11 @@ export default {
   }
 }
 
-.fade-enter-active, 
+.fade-enter-active,
 .fade-leave-active {
   transition: opacity .5s
 }
+
 .fade-enter, .fade-leave-active {
   opacity: 0
 }

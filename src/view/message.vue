@@ -14,7 +14,7 @@
           <div class="content">
               <div class="" v-html="vo.reply.content">
               </div>
-              <div class="related-topic" >
+              <div class="related-topic">
                 <h4 @click="getDetails(vo)">{{vo.topic.title}}</h4>
               </div>
             </div>
@@ -82,7 +82,6 @@ import { mapState } from 'vuex'
               this.$set(this.allMessages,index, data.data[item])
             });
             this.$store.commit('activeLoadings',false);
-            alert(1);
             // console.log(this.allMessages);
           }, err => {
             this.contents = err;

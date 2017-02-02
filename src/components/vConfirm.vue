@@ -92,12 +92,15 @@
 .bounce-enter-active {
   animation: bounce-in .7s;
 }
+
 .bounce-leave-active {
   animation: bounce-out .7s;
 }
+
 .bounces-enter-active {
   animation: bounce-in 1.4s;
 }
+
 .bounces-leave-active {
   animation: bounce-out .5s;
 }
@@ -113,6 +116,7 @@
     transform: translateY(0);
   }
 }
+
 @keyframes bounce-out {
   0% {
     transform: translateY(0);

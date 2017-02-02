@@ -10,7 +10,7 @@
         <h2>登录</h2>
       </div>
       <ul v-for="(items,index) in NavList" class="nav-list">
-        <li v-for="vo in items" @click="Choose(vo,vo.tab)" :class="{'unread':vo.view==='message' && unreadCount !== 0}">
+        <li v-for="vo in items" @click="Choose(vo,vo.tab)" :class="{'unread':vo.view==='message' && unreadCount !== 0&&unreadCount !== undefined}">
           <i class="iconfont" v-html='vo.icon'></i>
           <span>{{ vo.name }}<p class="unreadCounts" v-if="vo.view==='message' && unreadCount !== 0">{{ unreadCount }}</p></span>
         </li>
@@ -103,6 +103,7 @@ export default {
     created() {
       this.getUnreadCount();
       this.$store.commit('unreadCounts',);
+      console.log(this.unreadCount);
     },
     methods: {
       Choose (vo, tab) {
@@ -135,16 +136,19 @@ export default {
         this.$router.push({path: "/list"})
       },
       getUnreadCount() {
+        console.log(this.accesstoken);
         var _this = this;
-        api.message.messageCount(_this,
-          this.accesstoken,
-          data => {
-            if (data.success) {
-              this.$store.commit('unreadCounts',data.data);
-            }
-        }, err => {
+        if (this.accesstoken) {
+          api.message.messageCount(_this,
+            this.accesstoken,
+            data => {
+              if (data.success) {
+                this.$store.commit('unreadCounts',data.data);
+              }
+          }, err => {
 
-        });
+          });
+        }
       }
     },
 }

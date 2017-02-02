@@ -22,7 +22,7 @@ import {mapState} from 'vuex'
   z-index: 999;
   transition: all 2s 2s ease;
 }
-.boxLoading {  
+.boxLoading {
   width: 50px;
   height: 50px;
   margin: auto;
@@ -55,7 +55,6 @@ import {mapState} from 'vuex'
     border-radius: 3px;
   }
 }
-
 @keyframes animate {
   17% {
     border-bottom-right-radius: 3px;
@@ -74,8 +73,6 @@ import {mapState} from 'vuex'
     transform: translateY(0) rotate(90deg);
   }
 }
-
-
 @keyframes shadow {
   0%, 100% {
     transform: scale(1, 1);
