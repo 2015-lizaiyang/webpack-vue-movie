@@ -3,8 +3,8 @@
     <div>
       <img class="user-img" :src="userImg" @click.stop.prevent="GetUserDetails" alt="">
       <div class="name-box">
-        <span @click.stop.prevent="GetUserDetails">{{userName}}</span>
-        <span @click.stop.prevent="GetContent">{{userTime}}</span>
+        <span class="userName" @click.stop.prevent="GetUserDetails">{{userName}}</span>
+        <!-- <span @click.stop.prevent="GetContent">{{userTime}}</span> -->
       </div>
     </div>
     <slot name='two'></slot>
@@ -79,5 +79,8 @@
   span {
     display: block;
   }
+}
+.userName {
+  line-height: 44px;
 }
 </style>

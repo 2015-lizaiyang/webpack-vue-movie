@@ -65,6 +65,7 @@ export default {
         },err => {
           this.contents = err+", 请到Cnode社区注册后去设置里找到Access Token";
           this.count = true;
+          console.log(err);
         });
       }else {
         this.contents = "请输入Access Token";

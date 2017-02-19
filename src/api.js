@@ -130,8 +130,5 @@ export default {
         callbacksError(Response.body.error_msg)
       });
     },
-
   }
-
-
 }
